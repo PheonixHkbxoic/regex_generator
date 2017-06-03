@@ -10,6 +10,6 @@
 
 我希望我们能一起快乐的成长  
 
-其实,我还小... -_-  
+其实,人家还小... -_-  
 
 ![Vyvyan](http://pheker.cn/ssm/static/Vyvyan.png)
