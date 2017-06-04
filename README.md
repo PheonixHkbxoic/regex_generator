@@ -17,3 +17,5 @@
 ## 你看我
 ![Vyvyan](http://pheker.cn/ssm/static/vyvyan_snapshot1.png)
 
+## 简介及开发思路
+![Vyvyan](http://pheker.cn/ssm/static/vyvyan_ruler.png.png)
