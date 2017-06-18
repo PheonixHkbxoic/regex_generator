@@ -4,7 +4,33 @@
     var vars = {
         languages:["c/c++","java","php","js","python","ruby"],//语言
         ids:["txt_right","txt_error"],//ids:正确实例,错误实例
-        tools:[],   //工具区文本:语言,常量
+        metaregtype:{
+          itemdigit:"\\d",
+          itemlower:"a-z",
+          itemupper:"A-Z",
+          itemmeta:"\\^\\$\\[\\]\\{\\}\\(\\)\\.\\*\\+\\\\<>\\/\\?",
+          itemspace:"\\s",
+          itemother:"^\\da-zA-Z\\s^$\\[\\]{}()\\.*+\\\\<>\\/\\?",
+          itemall:"\\s\\S"
+        },
+        tools:{
+            language:"c/c++",
+            iswanna:"我想要",
+            regselecttype:{//选中的正则类型
+               itemdigit:"",
+               itemlower:"",
+               itemupper:"",
+               itemmeta:"",
+               itemspace:"",
+               itemother:"",
+               itemall:""
+            },
+            constants:"",
+            lookaround:{
+
+            }
+
+        },
         txts:[],    //文本:正确实例,错误实例,生成的正则实例
         regexs:[],  //生成的正则
         judgeType:{
@@ -27,19 +53,60 @@
                 return !(this.isDigit(character)
                     ||this.isLetter(character)
                     ||this.isRegexMetaCharacter(character));
+            },
+            getType:function(character){
+                if(this.isDigit(character)){
+                    return "number";
+                }else if(this.isLetter(character)){
+                    return "letter";
+                }else if(this.isLowerCase(character)){
+                    return "lower";
+                }else if(this.isUpperCase(character)){
+                    return "upper";
+                }else if(this.isRegexMetaCharacter(character)){
+                    return "meta";
+                }else if(this.isOther(character)){
+                    return "other";
+                }
+            },
+            getReg:function(character){
+                if(this.isDigit(character)){
+                    return "\\d+";
+                }else if(this.isLetter(character)){
+                    return "[a-zA-Z]+";
+                }else if(this.isLowerCase(character)){
+                    return "[a-z]+";
+                }else if(this.isUpperCase(character)){
+                    return "[A-Z]+";
+                }else if(this.isRegexMetaCharacter(character)){
+                    return "[\\.\\*\\+\\?\\[\\]\\(\\)\\{\\}\\-\\\\]+";
+                }else if(this.isOther(character)){
+                    return "[^\\da-zA-Z\\.\\*\\+\\?\\[\\]\\(\\)\\{\\}\\-\\\\]+";
+                }
             }
         },
         func:{
-            toArrByIndex : toArrByIndex,
-            generateRegArrAtIndex : generateRegArrAtIndex,
+            toArrByType:toArrByType,
             uniqueStr : uniqueStr,
             contains : contains,
             assembleRegArr : assembleRegArr,
             filterMetaCharacterInRightRegArr : filterMetaCharacterInRightRegArr,
             escapeMetaCharacter : escapeMetaCharacter,
             noRepeat : noRepeat,
-            isArr : isArr
+            isArr : isArr,
+            resizeTextarea:resizeTextarea,
+            getregselecttype:getregselecttype
+        },
+        nav:{
+            agt:navigator.userAgent.toLowerCase(),
+            is_op:function(){
+                return (this.agt.indexOf("opera") != -1);
+            },
+            is_ie:function(){
+                return (this.agt.indexOf("msie") != -1) && document.all && !is_op;
+            }
         }
+
     }
 
 
@@ -57,31 +124,80 @@
                 ret[j] = old+(v?v:"");
             });
         }
+//      console.log(toArrByType(arrs));
+
         return ret;
     }
 
-    //生成指定索引位置的正则数组
-    function generateRegArrAtIndex(uniqueArr){
-        var regArrAtIndex = uniqueArr;
-        regArrAtIndex = escapeMetaCharacter(regArrAtIndex);
-        uniqueArr.forEach(function(v,i,arr){
-            var metacharacter = "";
-            if(vars.judgeType.isDigit(v)){
-                metacharacter = "\\d";
-            }else if(vars.judgeType.isLetter(v)){
-                metacharacter = "[a-zA-Z]";
-            }else if(vars.judgeType.isRegexMetaCharacter(v)){
-                metacharacter = "[\\.\\*\\+\\?\\[\\]\\(\\)\\{\\}\\\\\\-]";
-            }else if(vars.judgeType.isOther(v)){
-                metacharacter = v;
-            }
-            // console.log("reg_metacharacter:"+metacharacter);
-            if(!contains(regArrAtIndex,metacharacter)){
-                regArrAtIndex.push(metacharacter);
+    //将正则字符串数组转换为按类别分类的正则数组     ["abc","ab123"] => [["[a-z]*"],["[a-z]","\d*"]]
+    function toArrByType(arrs){
+        var typeArrs = [];
+        var typeLen = 0;//索引类型数,即类型列数,如:abc123 则列数为2, 但这个是所有列数中的最大列数
+        var arr = [];
+        arrs.forEach(function(v,j,ar){
+            //[["ad", "123", "##"], ["a-zA-Z", "\d", "[^\da-zA-Z\.\*\+\?\[\]\(\)\{\}\-\\]"]]
+            //[["qdd"], ["a-zA-Z"]]
+            //==> [["ad","qdd","a-zA-Z"],["123","\d"],["##","[^\da-zA-Z\.\*\+\?\[\]\(\)\{\}\-\\]"]
+            var tmp = str2ArrByType(v);
+            if(tmp) {
+                console.log("实例"+(j+1)+"分解中...");
+                console.log(tmp);
+                var len = tmp[0].length;
+                typeLen = typeLen>len?typeLen:len;
+                arr.push(tmp);
             }
         });
-        return regArrAtIndex;
+
+        //按索引分
+        for (var i = 0; i < typeLen; i++) {//索引
+        	var typeArr = [];
+            for(var j=0;j<arr.length;j++){
+        	    var regArr = arr[j];
+//      	    console.log(regArr[0][i]);
+                if((typeof(regArr[0][i])!= "undefined")&&!contains(typeArr,regArr[0][i])){
+                    typeArr.push(regArr[0][i]);
+                }
+                if((typeof(regArr[0][i])!= "undefined")&&!contains(typeArr,regArr[1][i])){
+                    typeArr.push(regArr[1][i]);
+                }
+            }
+            console.log("按类型索引"+(i+1)+"重新分组中...");
+            console.log(typeArr);
+            typeArrs.push(typeArr);
+        }
+
+
+
+        return typeArrs;
     }
+
+    //将字符串 转换为  按类别分类的正则数组      "ab123" =>  ["[a-z]","\d*"]
+    function str2ArrByType(str){
+        if(str=="") return;
+        var retConstantArr = [];
+        var retRegArr = [];
+        var strArr = str.split("");
+        var lastTyp = "";
+        strArr.forEach(function(v,j,arr){
+            var vType = vars.judgeType.getType(v);
+            var vReg = vars.judgeType.getReg(v);
+            if(j==0){
+                retConstantArr.push(v);
+                lastTyp = vType;
+                retRegArr.push(vReg);
+            }else{
+                if(lastTyp!=vType){
+                    lastTyp = vType;
+                    retConstantArr.push(v);
+                    retRegArr.push(vReg);
+                }else{
+                    retConstantArr[retConstantArr.length-1] += v;
+                }
+            }
+        });
+        return [retConstantArr,retRegArr];
+    }
+
 
     //字符串去重
     function uniqueStr(str){
@@ -105,6 +221,7 @@
 
     //组合正则数组
     function assembleRegArr(regArr){
+        console.log("装配分组中...");
         var assembledArr = [];
         regArr.forEach(function(v,i,arr){
             var typeArr = v;
@@ -121,6 +238,8 @@
             }
 
         });
+        console.log(assembledArr);
+        console.log("装配完成!");
         return assembledArr;
     }
 
@@ -154,6 +273,36 @@
     //判断是否是数组
     function isArr(arr){
         return Object.prototype.toString.call(arr) === '[object Array]';
+    }
+
+    //获取选中的正则类型
+    function getregselecttype(regselecttype){
+        var ret = "";
+        for(var k in regselecttype){
+            ret += regselecttype[k];
+        }
+        return "["+ret+"]*";
+    }
+
+    //重置textarea
+    //<textarea style="overflow: hidden;  font-family: Verdana,Arial; font-style: normal;  font-size: 13px; line-height: normal; " rows="4" cols="30" onfocus="javascript:ResizeTextarea(this,4);" onclick="javascript:ResizeTextarea(this,4);" onkeyup="javascript:ResizeTextarea(this,4);"></textarea>
+    function resizeTextarea(a,row){
+        if(!a){return}
+        if(!row) row=5;
+        var b=a.value.split("\n");
+        var c=this.nav.is_ie?1:0;
+        c+=b.length;
+        var d=a.cols;
+        if(d<=20){d=40}
+        for(var e=0;e<b.length;e++){
+            if(b[e].length>=d){
+                c+=Math.ceil(b[e].length/d)
+            }
+        }
+        c=Math.max(c,row);
+        if(c!=a.rows){
+            a.rows=c;
+        }
     }
 
 
