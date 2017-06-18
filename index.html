@@ -5,26 +5,149 @@
     <title>Vyvyan</title>
     <link type="image/x-icon" rel="shortcut icon" href="http://pheker.cn/ssm/static/Vyvyan.png" />
     <link rel="stylesheet" href="css/index.css" />
+    <style type="text/css">
+
+        .user_wanna{
+            width:100%;
+        }
+    	.wanna_item{
+    	    display: inline-block;
+    	    float:left;
+    	    width:auto;
+    	    min-width: 200px;
+    	    background:#222;
+    	    border-radius:10px;
+    	    height:100%;
+    	    min-height: 220px;
+    	    margin:10px;
+    	    padding:10px 10px;;
+    	}
+    	.clearfloat{
+    	    width:0px;
+    	    height:0px;
+    	    clear: both;
+    	}
+    	.wanna_item_convert{
+            display: inline-block;
+            float:left;
+            width:auto;
+            height:100%;
+            min-height: 220px;
+            margin:10px;
+        }
+    	.language,.iswanna{
+    	    text-align: center;
+    	    /*margin-top: 20px;*/
+    	    margin:20px;
+    	}
+    	.wanna_item>inut{
+    	    display: block;
+    	}
+    	.wanna_item>.item{
+    	    margin:2px 0px;
+    	}
+    	.wanna_item>.item>label{
+    	    display: inline-block;
+    	    width: 70px;
+    	}
+    </style>
 </head>
 <body>
     <div class="condition">
         <h1>Vyvyan</h1><label id="author">by cn.pheker</label>
         <div class="tools">
-            <div class="language">
-                <label>语言:</label>
-                <select id="language_select">
-                    <option value="c/c++">c/c++</option>
-                    <option value="java">java</option>
-                    <option value="php">php</option>
-                    <option value="js">js</option>
-                    <option value="python">python</option>
-                    <option value="ruby">ruby</option>
-                </select>
+            <div class="user_wanna">
+                <div class="wanna_item border">
+                    <div class="add-border-bottom-green">语言与抉择</div>
+                    <div class="language">
+                        <select id="language_select" style="width: 100%;">
+                            <option value="c/c++">c/c++</option>
+                            <option value="java">java</option>
+                            <option value="php">php</option>
+                            <option value="js">js</option>
+                            <option value="python">python</option>
+                            <option value="ruby">ruby</option>
+                        </select>
+                    </div>
+                    <div class="iswanna">
+                        <select id="iswanna"  style="width: 100%;">
+                            <option value="1">我想要</option>
+                            <option value="0">我不想要</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="wanna_item border">
+                    <div class="add-border-bottom-green">正则类型</div>
+                     <div class="item constant">
+                        <label>常量:</label>
+                        <input type="text" id="txt_constant" placeholder="请输入正则常量" title="请输入正则常量">
+                    </div>
+                    <div class="item" title="\d">
+                        <label for="itemdigit">数字</label>
+                        <input type="checkbox" name="itemdigit" id="itemdigit" value="\d"/>
+                    </div>
+                    <div class="item" title="a-z">
+                        <label for="itemlower">小写字母</label>
+                        <input type="checkbox" name="itemlower" id="itemlower" value="a-z"/>
+                    </div>
+                    <div class="item" title="A-Z">
+                        <label for="itemupper">大写字母</label>
+                        <input type="checkbox" name="itemupper" id="itemupper" value="A-Z"/>
+                    </div>
+                    <div class="item" title="^$-[]{}()+<>*\?.">
+                        <label for="itemdigit">元字符</label>
+                        <input type="checkbox" name="itemdigit" id="itemmeta" value="^$-[]{}()+<>*\?."/>
+                    </div>
+                    <div class="item" title="\s">
+                        <label for="itemmeta">空白字符</label>
+                        <input type="checkbox" name="itemmeta" id="itemspace" value="\s"/>
+                    </div>
+                    <div class="item" title="非^$-[]{}()+<>*?.\da-zA-Z">
+                        <label for="itemmeta">其他</label>
+                        <input type="checkbox" name="itemmeta" id="itemother" value="[^\^\$\-\[\]{}()+<>*\?.\da-zA-Z]"/>
+                    </div>
+                    <div class="item" title="[\s\S]">
+                        <label for="itemmeta">所有字符</label>
+                        <input type="checkbox" name="itemmeta" id="itemall" value="[\s\S]"/>
+                    </div>
+
+                </div>
+                <div class="wanna_item border">
+                    <div class="add-border-bottom-green">预查</div>
+                    <div class="item" style="margin:20px;">
+                        <label for="lookahead">前有狼</label>
+                        <input type="text" name="lookahead" id="lookahead" value=""  placeholder="例:^"/>
+                        <label for="lookahead">没有</label>
+                    </div>
+                    <div class="item" style="margin:20px;">
+                        <label for="lookbehind">后有虎</label>
+                        <input type="text" name="lookbehind" id="lookbehind" value="" placeholder="例:$"/>
+                        <label for="lookahead">没有</label>
+                    </div>
+                    <div class="item" style="margin:20px;">
+                        <label for="lookbehind">捕获组</label>
+                        <input type="text" name="lookbehind" id="lookbehind" value="" placeholder="()   (?:)"/>
+                    </div>
+                </div>
+                <div class="wanna_item_convert"  style="display: none;">
+                     <div class="" style="margin-top: 100px;display:inline-block">
+                     	<img src="img/convert_128.png" width="50px" height="50px"/>
+                     </div>
+                </div>
+                <div class="wanna_item border">
+                    <div class="add-border-bottom-green">局部正则组合</div>
+                    <div class="">
+                    	<textarea id="part_reg" onpropertychange="this.style.posHeight=this.scrollHeight" placeholder="生成的局部正则" style="width: 98%;height:180px;background:#222;color:green;border: none;overflow: hidden;opacity: 0.8;font-size: 18px;"></textarea>
+                    </div>
+                </div>
+                <div class="wanna_item_convert" style="display: none;">
+                     <div class="" style="margin-top: 80px;padding-left: 20px;display:inline-block">
+                        <img src="img/icon_add_part_reg.png" width="80px" height="80px"/>
+                     </div>
+                </div>
+                <div class="clearfloat"></div>
             </div>
-            <div class="constant">
-                <label>常量:</label>
-                <input type="text" id="txt_constant" placeholder="请输入正则常量">
-            </div>
+
         </div>
 
         <div class="io add-border-top-green">
@@ -77,12 +200,58 @@
                     vars.tools[0] = $(this).text();
                     dealText();
                 });
-            })
+            });
+            $("#iswanna").change(function() {
+                $("#iswanna option:selected").each(function () {
+                    vars.tools[1] = $(this).text();
+                    dealText();
+                });
+            });
+
+            //正则类型
+            if (!-[1,]) {//ie,需要失去焦点才能触发选中事件
+                $('.wanna_item .item input[type=checkbox]').click(function () {
+                    this.blur();
+                    this.focus();
+                });
+            };
+                //选中/取消选中事件
+            $(".wanna_item .item input[type=checkbox]").change(function(elem) {
+                var id = $(this).attr("id");
+                if($(this).prop('checked') ==true){
+                    console.log(id);
+                    vars.tools.regselecttype[id] = vars.metaregtype[id];
+                    //(数字,小写,大写,元字符,空白),其他,所有字符 三者不共存
+                    var num_space = ["itemdigit","itemlower","itemupper","itemmeta","itemspace"];
+                    var other_all = ["itemother","itemall"];
+                    if(id=="itemother"||id=="itemall"){
+                        $.each(num_space,function(i,itemid,ns){
+                           $("#"+itemid).prop("checked","");
+                           vars.tools.regselecttype[itemid] = "";
+                        });
+                        //其他,所有二者不共存
+                        var itemid = (id=="itemother")?"itemall":"itemother";
+                        $("#"+itemid).prop("checked","");
+                        vars.tools.regselecttype[itemid] = "";
+                    }else{
+                        $.each(other_all,function(i,itemid,ns){
+                           $("#"+itemid).prop("checked","");
+                           vars.tools.regselecttype[itemid] = "";
+                        });
+                    }
+                }else{
+                    vars.tools.regselecttype[id] = "";
+                }
+
+                $("#part_reg").val(pheker.getregselecttype(pheker.tools.regselecttype));
+            });
+
+
             $("#txt_constant").on('input propertychange',function(){
                 var text = $(this).val();
-                vars.tools[1] = text?text.split("##"):[];
+                vars.tools.constants = text?text.split("##"):[];
                 dealText();
-            })
+            });
 
             //正确实例,错误实例
             $.each(vars.ids,function(index,id){
@@ -99,37 +268,29 @@
 
             //逻辑处理
             function dealText(tools,txts){
-                //获取语言,常量,正确实例,错误实例,
-                vars.tools[0] = $("#language_select option:selected").text();
-                vars.tools[1] = $("#txt_constant").val();
+                //获取语言,是否想要,[正则类型,"常量"],正确实例,错误实例,
+                vars.tools.language = $("#language_select option:selected").text();
+                vars.tools.iswanna = $("#language_select option:selected").text();
+                vars.tools.constants = $("#txt_constant").val();
                 vars.txts[0] = $("#txt_right").val();
                 vars.txts[1] = $("#txt_right").val();
                 console.log(vars);
 
-                var constant = vars.tools[1];
+                var constant = vars.tools.constants;
                 var regex = constant;
 
+                //生成的正则
                 vars.regexs[0] = regex;
 
             //没有考虑常量的情况下
                 //正确实例字符数组
                 var reg_example_rights = vars.txts[0]?vars.txts[0].split("\n"):[];
                 // console.log(reg_example_rights)
-                //重构数组为 按索引划分的数组
-                var arrAtIndex = pheker.toArrByIndex(reg_example_rights);
-                // console.log(arrAtIndex)
-                //每个索引位置 生成各自 正则数组
-                var regArr = []; //生成的正则字符数组 二维
-                arrAtIndex.forEach(function(v,i,rer){
-                    var uniqueArr = pheker.uniqueStr(v).split("");
-                    // console.log(uniqueArr);
-                    regArr.push(pheker.generateRegArrAtIndex(uniqueArr));
-                });
-                // console.log(regArr);
+                //重构数组为 按索引类型划分的数组
+                var arrAtIndex = pheker.toArrByType(reg_example_rights);//现在
 
                 //组合正则
-                var assembledArr = pheker.assembleRegArr(regArr);
-                console.log(assembledArr);
+                var assembledArr = pheker.assembleRegArr(arrAtIndex);
                 //优化正则
                     var optimizedArr = pheker.noRepeat(assembledArr);
 
